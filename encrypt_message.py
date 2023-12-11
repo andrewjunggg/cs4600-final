@@ -38,16 +38,16 @@ def encrypt_file(input_file, output_file, key):
     print(f"Encryption of '{input_file}' to '{output_file}' completed successfully.")
 
 
-def encrypt_file_key_with_rsa(aes_key, rsa_public_key_file):
-    with open(rsa_public_key_file, "rb") as f:
+def encrypt_file_key_with_rsa(key, rsa_public_key_file):
+    with open(rsa_public_key_file, "r") as f:
         rsa_public_key = RSA.import_key(f.read())
 
     cipher_rsa = PKCS1_OAEP.new(rsa_public_key)
-    encrypted_aes_key = cipher_rsa.encrypt(aes_key)
+    encrypted_key = cipher_rsa.encrypt(key)
 
-    print("AES key has been encrypted successfully.")
+    print("Key has been encrypted successfully.")
 
-    return encrypted_aes_key
+    return encrypted_key
 
 
 def generate_hmac(data, key):
@@ -70,7 +70,7 @@ def main():
     encrypt_file(message_input_file, encrypted_message_output_file, aes_key)
 
     # Encrypt AES key using RSA
-    rsa_public_key_file = "./public_keys/sender_public_key.pem"
+    rsa_public_key_file = "./public_keys/reciever_public_key.pem"
 
     encrypted_aes = encrypt_file_key_with_rsa(aes_key, rsa_public_key_file)
 
@@ -85,8 +85,11 @@ def main():
     mac_key = get_random_bytes(32)
     hmac_digest = generate_hmac(encrypted_file_data, mac_key)
 
+    # encrypt the key used to generate the mac tag
+    encrypted_mac_key = encrypt_file_key_with_rsa(mac_key, rsa_public_key_file)
+
     transmitted_data_output_file = "transmitted_data.bin"
-    data_to_transmit = encrypted_aes + encrypted_file_data + hmac_digest
+    data_to_transmit = encrypted_aes + encrypted_mac_key + hmac_digest + encrypted_file_data
     save_to_file(data_to_transmit, transmitted_data_output_file)
     print("transmitted_data has been saved successfully.")
 
