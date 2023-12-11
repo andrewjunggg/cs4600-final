@@ -1,6 +1,7 @@
 from Crypto.PublicKey import RSA
 import os
 
+# 2048 bit (256 byte) key size
 KEY_SIZE = 2048
 
 def generate_keys(party_name):
