@@ -1,23 +1,16 @@
-from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
-from Crypto.Random import get_random_bytes
 import hmac
 import hashlib
-import os
 
 # Step 1. Generate RSA public and private keys
 # Step 2. Encrypt the message.txt using AES, and store the AES key
 # Step 3. Encrypt the AES key using the receiver's RSA public key.
 # The encrypted AES key is sent together with the encrypted message obtained from step 2
-# Step 4. TODO: Append Message Authentication Code (MAC) to the data that will be transmitted.
+# Step 4. Append Message Authentication Code (MAC) to the data that will be transmitted.
 # (Free to choose which protocol)
-# Step 5. TODO: For receiver: receive, authenticate, and decrypt the message.
-
-# You can create a file called “Transmitted_Data”, which can include all data transmitted between
-# sender and receiver, i.e., encrypted message, encrypted AES key, and the MAC. This file is
-# written by the sender and read by the receiver.
+# Step 5. For receiver: receive, authenticate, and decrypt the message.
 
 
 def encrypt_file(input_file, output_file, key):
@@ -89,7 +82,9 @@ def main():
     encrypted_mac_key = encrypt_file_key_with_rsa(mac_key, rsa_public_key_file)
 
     transmitted_data_output_file = "transmitted_data.bin"
-    data_to_transmit = encrypted_aes + encrypted_mac_key + hmac_digest + encrypted_file_data
+    data_to_transmit = (
+        encrypted_aes + encrypted_mac_key + hmac_digest + encrypted_file_data
+    )
     save_to_file(data_to_transmit, transmitted_data_output_file)
     print("transmitted_data has been saved successfully.")
 
