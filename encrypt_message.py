@@ -63,7 +63,7 @@ def main():
     encrypt_file(message_input_file, encrypted_message_output_file, aes_key)
 
     # Encrypt AES key using RSA
-    rsa_public_key_file = "./public_keys/reciever_public_key.pem"
+    rsa_public_key_file = "./public_keys/receiver_public_key.pem"
 
     encrypted_aes = encrypt_file_key_with_rsa(aes_key, rsa_public_key_file)
 
