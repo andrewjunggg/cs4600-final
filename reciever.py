@@ -20,10 +20,18 @@ with open('./transmitted_data.bin', 'rb') as file:
 
 # decrypt the encrypted aes_key with private key
 cipher_rsa = PKCS1_OAEP.new(private_key)
-aes_key = cipher_rsa.decrypt(encrypted_aes_key)
+try:
+   aes_key = cipher_rsa.decrypt(encrypted_aes_key)
+except ValueError as error:
+   print('AES key: ', error)
+   raise SystemExit 
 
 # decrypt the encrypted mag key with private key
-mac_key = cipher_rsa.decrypt(encrypted_mac_key)
+try: 
+   mac_key = cipher_rsa.decrypt(encrypted_mac_key)
+except  ValueError as error:
+   print('MAC key: ', error)
+   raise SystemExit 
 
 # create aes cipher with the decrypted aes key
 cipher_aes = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
@@ -38,7 +46,7 @@ try:
    print("Recieved ciphertext is authentic\n")
 except ValueError:
    print("Ciphertext or key is invalid")
-   raise SystemExit # exit script on Value error
+   raise SystemExit 
 
 print("----Decrypted ciphertext----")
 print( cipher_aes.decrypt(ciphertext).decode('utf-8') )
